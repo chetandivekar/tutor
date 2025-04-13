@@ -1,5 +1,6 @@
 "use client";
 import { useChat } from "ai/react";
+import { useEffect, useRef } from "react";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,17 @@ export default function ChatPage() {
       experimental_throttle: 50, // Throttle updates for better performance [^2]
     });
 
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
     <div className="flex flex-col h-screen bg-zinc-50 dark:bg-zinc-900">
       {/* Header */}
@@ -22,7 +34,10 @@ export default function ChatPage() {
       </header>
 
       {/* Chat container */}
-      <div className="flex-1 overflow-auto p-4 container mx-auto max-w-4xl">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-auto p-4 container mx-auto max-w-4xl"
+      >
         <div className="space-y-6 pb-24">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[70vh] text-center">
@@ -67,7 +82,10 @@ export default function ChatPage() {
                       {message.content}
                     </div>
                   ) : (
-                    <div className="prose dark:prose-invert prose-pre:bg-zinc-800 prose-pre:text-zinc-100 prose-pre:dark:bg-black prose-pre:dark:text-zinc-100 prose-code:text-zinc-700 prose-code:dark:text-zinc-300 prose-code:before:content-none prose-code:after:content-none ">
+                    <div
+                      // ref={bottomRef}
+                      className="prose dark:prose-invert prose-pre:bg-zinc-800 prose-pre:text-zinc-100 prose-pre:dark:bg-black prose-pre:dark:text-zinc-100 prose-code:text-zinc-700 prose-code:dark:text-zinc-300 prose-code:before:content-none prose-code:after:content-none "
+                    >
                       <MemoizedMarkdown
                         id={message.id}
                         content={message.content}
