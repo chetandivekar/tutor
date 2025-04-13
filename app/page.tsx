@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function ChatPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
     useChat({
       api: "/api/chat",
       experimental_throttle: 50, // Throttle updates for better performance [^2]
@@ -59,15 +59,15 @@ export default function ChatPage() {
                   className={`rounded-lg px-4 py-2 max-w-[85%] ${
                     message.role === "user"
                       ? "bg-primary text-primary-foreground"
-                      : "bg-zinc-100 dark:bg-zinc-800"
+                      : ""
                   }`}
                 >
                   {message.role === "user" ? (
-                    <div className="prose dark:prose-invert">
+                    <div className="prose dark:prose-invert ">
                       {message.content}
                     </div>
                   ) : (
-                    <div className="prose dark:prose-invert prose-pre:bg-zinc-800 prose-pre:text-zinc-100 prose-pre:dark:bg-black prose-pre:dark:text-zinc-100 prose-code:text-zinc-700 prose-code:dark:text-zinc-300 prose-code:before:content-none prose-code:after:content-none">
+                    <div className="prose dark:prose-invert prose-pre:bg-zinc-800 prose-pre:text-zinc-100 prose-pre:dark:bg-black prose-pre:dark:text-zinc-100 prose-code:text-zinc-700 prose-code:dark:text-zinc-300 prose-code:before:content-none prose-code:after:content-none ">
                       <MemoizedMarkdown
                         id={message.id}
                         content={message.content}
@@ -83,31 +83,41 @@ export default function ChatPage() {
 
       {/* Input area */}
       <div className="sticky bottom-0 border-t bg-white dark:bg-zinc-950 dark:border-zinc-800 p-4">
-        <form onSubmit={handleSubmit} className="container mx-auto max-w-4xl">
-          <div className="relative">
-            <Textarea
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Type your message..."
-              className="min-h-12 resize-none pr-12 py-3"
-              rows={1}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(e as any);
-                }
-              }}
-            />
-            <Button
-              type="submit"
-              size="icon"
-              disabled={isLoading || !input.trim()}
-              className="absolute right-2 top-2.5 h-8 w-8"
-            >
-              <Send className="h-4 w-4" />
-              <span className="sr-only">Send</span>
-            </Button>
+        {/* Error message */}
+        {/* {error && (
+          <div className="text-red-500 text-center mb-2">
+            {error.message || "Something went wrong. Please try again."}
           </div>
+        )} */}
+        <form onSubmit={handleSubmit} className="container mx-auto max-w-4xl">
+          {error ? (
+            <div>Something went wrong</div>
+          ) : (
+            <div className="relative">
+              <Textarea
+                value={input}
+                onChange={handleInputChange}
+                placeholder="Type your message..."
+                className="min-h-12 resize-none pr-12 py-3"
+                rows={1}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(e as any);
+                  }
+                }}
+              />
+              <Button
+                type="submit"
+                size="icon"
+                disabled={isLoading || !input.trim()}
+                className="absolute right-2 top-2.5 h-8 w-8"
+              >
+                <Send className="h-4 w-4" />
+                <span className="sr-only">Send</span>
+              </Button>
+            </div>
+          )}
         </form>
       </div>
     </div>

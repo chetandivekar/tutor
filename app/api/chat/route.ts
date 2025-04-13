@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   // Make sure we have an API key
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    return new Response("OpenAI API key not found", { status: 500 });
+    return new Response("OpenAI API key not found", { status: 400 });
   }
 
   const { messages } = await req.json();
