@@ -15,6 +15,33 @@ export default function ChatPage() {
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const autoResizeTextarea = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Reset height so it adjusts properly on every change
+      textarea.style.height = "auto";
+
+      // Set the height based on the content
+      textarea.style.height = `${textarea.scrollHeight}px`;
+
+      // Set a maximum height and make it scrollable if needed
+      const maxHeight = 250; // Max height in pixels
+      if (textarea.scrollHeight > maxHeight) {
+        textarea.style.height = `${maxHeight}px`;
+        textarea.style.overflowY = "auto"; // Enable vertical scrolling if height exceeds maxHeight
+      } else {
+        textarea.style.overflowY = "hidden"; // Hide scroll if under max height
+      }
+    }
+  };
+
+  // Ensure it resizes on mount too
+  useEffect(() => {
+    autoResizeTextarea();
+  }, [input]);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -113,10 +140,14 @@ export default function ChatPage() {
           ) : (
             <div className="relative">
               <Textarea
+                ref={textareaRef}
                 value={input}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  autoResizeTextarea(); // Adjust height as user types
+                }}
                 placeholder="Type your message..."
-                className="min-h-12 resize-none pr-12 py-3"
+                className="resize-none pr-12 py-3 overflow-hidden"
                 rows={1}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
